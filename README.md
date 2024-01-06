@@ -2,7 +2,7 @@
 This is a script to monitor your ZFS pools in TrueNAS SCALE, and light up the FAULT LED on compatible SAS backplanes when a disk fails or otherwise goes offline.
 
 # WARNING
-This script isn't currently fully functional.  In particular, it's currently known to not work properly when more than one disk is offline or faulted.
+This script has had very minimal testing and should not be relied on for production use.
 
 ## Requirements
 This script is only intended to run under TrueNAS SCALE, and has only been tested under version 23.10.1.  It **will not** work under TrueNAS CORE.  It may work under other Linux installations, but most likely only if you have created your pool using gptid designators.
