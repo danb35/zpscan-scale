@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/bash
 # https://github.com/danb35/zpscan-scale
 
 # Scan TrueNAS SCALE pools for faulted disks, and light the Fault LED
@@ -55,7 +55,7 @@ for line in "${errors}"; do
   echo "device: ${device}"
   device_alpha=$(lsblk -o NAME,SIZE,PARTUUID | grep "${device}" | awk '{print $1}' | tr -cd [:alpha:])
   echo "device_alpha: ${device_alpha}"
-  if ! [ "${device_alpha}" = ""]; then
+  if ! [ "${device_alpha}" = "" ]; then
     "${encled}" "${device_alpha}" fault
   fi
 done
