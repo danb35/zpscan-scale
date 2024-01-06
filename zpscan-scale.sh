@@ -35,30 +35,23 @@ if ! [ -f "${encled}" ]; then
   exit 1
 fi
 
-# Create temp file and save zpool status to it
-status_file=$(mktemp)
-/usr/sbin/zpool status > "${status_file}"
-
-# If no errors, clear locate/fault LEDs, remove temp file, and exit
-if [ $(cat "${status_file}" | grep -E "(DEGRADED|FAULTED|OFFLINE|UNAVAIL|REMOVED|FAIL|DESTROYED)" | wc -l) -eq 0 ]; then
+# If no errors, clear locate/fault LEDs and exit
+if [ $(/usr/sbin/zpool status | grep -cE "(DEGRADED|FAULTED|OFFLINE|UNAVAIL|REMOVED|FAIL|DESTROYED)") -eq 0 ]; then
   "${encled}" ALL off
-  rm "${status_file}"
   exit 0
 fi
 
 # If we're here, there's a pool error.  Find the faulted device(s) and
 # light the corresponding LEDs
-errors=$(cat "${status_file}" | grep -E "(DEGRADED|FAULTED|OFFLINE|UNAVAIL|REMOVED|FAIL|DESTROYED)")
-for line in "${errors}"; do
-  echo "line: ${line}"
+errors_file=$(mktemp)
+/usr/sbin/zpool status | grep -E "(DEGRADED|FAULTED|OFFLINE|UNAVAIL|REMOVED|FAIL|DESTROYED)" > "${errors_file}"
+while read -r line; do
   device=$(echo "${line}" | awk '{print $1}')
-  echo "device: ${device}"
   device_alpha=$(lsblk -o NAME,SIZE,PARTUUID | grep "${device}" | awk '{print $1}' | tr -cd [:alpha:])
-  echo "device_alpha: ${device_alpha}"
   if ! [ "${device_alpha}" = "" ]; then
     "${encled}" "${device_alpha}" fault
   fi
-done
+done < "${errors_file}"
 
 # Delete the temp file
-rm "${status_file}"
+rm "${errors_file}"
