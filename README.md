@@ -18,3 +18,5 @@ Change to this repository's directory, and `cp zpscan-config.example zpscan-conf
 ## Usage
 In the TrueNAS web UI, set a cron job to run the `zpscan-scale.sh` script on your desired schedule; I'd suggest somewhere between every 15 minutes and every hour.
 
+## Status
+As noted above, this script has received minimal testing.  It's been shown to work with a Supermicro SAS2 expander backplane on one system.  It's expected, but hasn't been shown, to work with other SAS backplanes.  It's unlikely that it will work when a disk has completely failed to the extent that it's no longer seen by the kernel.
